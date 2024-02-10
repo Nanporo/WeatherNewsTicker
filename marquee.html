@@ -46,7 +46,7 @@
     // 定義獲取並更新資料的函數
     function fetchDataAndDisplay() {
         // 天氣概況
-        fetch('')    // 填入CWA的XML API網址
+        fetch('')    // 填入CWA的F-C0032-016 XML API網址
             .then(response => response.text())
             .then(data => {
                 // 使用DOMParser解析XML資料
@@ -77,7 +77,7 @@
 
     // 溫度資訊
     function fetchTemperatureData() {
-        fetch('')     // 填入CWA的XML API網址
+        fetch('')     // 填入CWA的O-A0001-001 XML API網址
             .then(response => response.text())
             .then(data => {
                 // 使用DOMParser解析XML資料
