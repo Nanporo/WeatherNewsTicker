@@ -36,6 +36,7 @@
 
     </style>
 </head>
+
 <body style="background-color:#000;">
 
 <div id="marquee">
@@ -45,8 +46,8 @@
 <script>
     // 定義獲取並更新資料的函數
     function fetchDataAndDisplay() {
-        // 天氣概況
-        fetch('')    // 填入CWA的F-C0032-016 XML API網址
+        // 台南天氣概況的 API
+        fetch('') // 填入 CWA 的 F-C0032-016 API
             .then(response => response.text())
             .then(data => {
                 // 使用DOMParser解析XML資料
@@ -57,54 +58,39 @@
                 const locationName = xmlDoc.querySelector('locationName').textContent;
                 const parameterValues = Array.from(xmlDoc.querySelectorAll('parameterValue')).map(el => el.textContent);
 
-                // 將資料顯示在跑馬燈上
-                const marqueeContent = document.getElementById('marquee-content');
-                marqueeContent.innerHTML = ''; // 清空之前的內容
-                const content = `1. ${locationName} 　 ${parameterValues.join(' 　 ')}`;
-                const span = document.createElement('span');
-                span.textContent = content;
-                marqueeContent.appendChild(span);
+                // 天氣 API 的 URL
+                const temperatureDataURL = ''; // 填入 CWA 的 F-C0032-016 API
 
-                // 根據文字長度計算動畫時間
-                const animationDuration = content.length * 2 + 's';
-                marqueeContent.style.animationDuration = animationDuration;
+                // 天氣 API 獲取資料
+                fetch(temperatureDataURL)
+                    .then(response => response.text())
+                    .then(temperatureData => {
+                        // 使用DOMParser解析XML資料
+                        const temperatureXmlDoc = parser.parseFromString(temperatureData, 'application/xml');
+                        const stations = temperatureXmlDoc.querySelectorAll('stations');
+                        const temperatureInfo = Array.from(stations).map(station => {
+                            const stationName = station.querySelector('StationName').textContent;
+                            const townName = station.querySelector('TownName').textContent;
+                            const weather = station.querySelector('Weather').textContent;
+                            const temperature = station.querySelector('AirTemperature').textContent;
+                            return `${stationName} ${townName}：${weather} / ${temperature}°C`;
+                        });
 
-                // 繼續執行下一個資料輪播
-                fetchTemperatureData();
+                        // 將資料顯示在跑馬燈上
+                        const marqueeContent = document.getElementById('marquee-content');
+                        marqueeContent.innerHTML = ''; // 清空之前的內容
+                        const content = `${locationName}　天氣概況：${parameterValues.join(' 　 ')}　　　　　　　　台灣各地概況：${temperatureInfo.join('　　')}`;
+                        const span = document.createElement('span');
+                        span.textContent = content;
+                        marqueeContent.appendChild(span);
+
+                        // 根據文字長度計算動畫時間
+                        const animationDuration = content.length * 2 + 's';
+                        marqueeContent.style.animationDuration = animationDuration;
+                    })
+                    .catch(error => console.error('Error fetching temperature data:', error));
             })
             .catch(error => console.error('Error fetching weather data:', error));
-    }
-
-    // 溫度資訊
-    function fetchTemperatureData() {
-        fetch('')     // 填入CWA的O-A0001-001 XML API網址
-            .then(response => response.text())
-            .then(data => {
-                // 使用DOMParser解析XML資料
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, 'application/xml');
-
-                // 提取所需的資料
-                const stations = xmlDoc.querySelectorAll('stations');
-                const temperatureInfo = Array.from(stations).map(station => {
-                    const stationName = station.querySelector('StationName').textContent;
-                    const townName = station.querySelector('TownName').textContent;
-                    const temperature = station.querySelector('AirTemperature').textContent;
-                    return `${stationName} ${townName}：${temperature}°C`;
-                });
-
-                // 將資料顯示在跑馬燈上
-                const marqueeContent = document.getElementById('marquee-content');
-                const content = `2. ${temperatureInfo.join(' 　　 ')}`;
-                const span = document.createElement('span');
-                span.textContent = content;
-                marqueeContent.appendChild(span);
-
-                // 根據文字長度計算動畫時間
-                const animationDuration = content.length * 2 + 's'; // 調整乘數以適應實際情況
-                marqueeContent.style.animationDuration = animationDuration;
-            })
-            .catch(error => console.error('Error fetching temperature data:', error));
     }
 
     // 初始執行一次，並設定每小時自動更新
