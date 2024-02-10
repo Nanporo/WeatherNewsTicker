@@ -70,10 +70,10 @@
                         const stations = temperatureXmlDoc.querySelectorAll('stations');
                         const temperatureInfo = Array.from(stations).map(station => {
                             const stationName = station.querySelector('StationName').textContent;
-                            const townName = station.querySelector('TownName').textContent;
+                            const countryName = station.querySelector('CountryName').textContent;
                             const weather = station.querySelector('Weather').textContent;
                             const temperature = station.querySelector('AirTemperature').textContent;
-                            return `${stationName} ${townName}：${weather} / ${temperature}°C`;
+                            return `${countryName} ${stationName}：${weather} / ${temperature}°C`;
                         });
 
                         // 將資料顯示在跑馬燈上
